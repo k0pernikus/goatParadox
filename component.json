@@ -1,0 +1,10 @@
+{
+  "name": "promise",
+  "version": "0.0.0",
+  "dependencies": {
+    "when": "~2.0.0",
+    "jquery": "~1.9.1",
+    "underscore": "~1.4.4",
+    "requirejs": "~2.1.5"
+  }
+}
