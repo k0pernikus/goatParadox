@@ -11,7 +11,7 @@ var GameMaster = {
 }
 
 Math.randomNumber = function (max) {
-    return Math.round(Math.random() * 100 % 100) - 1;
+    return Math.round(Math.random() * max % max);
 }
 
 
