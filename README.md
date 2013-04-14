@@ -1,10 +1,14 @@
-Goat paradox
+# Goat paradox
 
 Should you switch?
 
-Setup
+##Setup
 
-compass compile sass/main.sass
-bower install
-php -S 127.0.0.1:8000
+- bower install
+- compass compile sass/main.sass && php -S 127.0.0.1:8000
 
+TODO:
+
+- [ ] Ask player if he wants to swap doors
+- [ ] Beatuify whole game
+- [ ] Fnord
