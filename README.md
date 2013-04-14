@@ -1,4 +1,3 @@
-promise
-=======
+Goat paradox
 
-For learning purpose: Working with promises.
+Should you switch?
