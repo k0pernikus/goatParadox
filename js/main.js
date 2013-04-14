@@ -1,7 +1,8 @@
 var Player = {
     selectedDoor: null,
-    selectDoor: function() {},
-    switch: function() {
+    selectDoor: function () {
+    },
+    switch: function () {
     }
 }
 
@@ -9,7 +10,7 @@ var GameMaster = {
 
 }
 
-Math.randomNumber = function(max) {
+Math.randomNumber = function (max) {
     return Math.round(Math.random() * 100 % 100) - 1;
 }
 
@@ -27,7 +28,7 @@ var Door = {
             that.isSelected = true
         });
     },
-    init: function(){
+    init: function () {
         this.$el = $('<a>', {
             class: 'door selectable'
         });
@@ -40,7 +41,13 @@ var Platform = {
     doorCount: null,
     jackpotNumber: null,
     doors: [],
-    init: function($el, doorCount) {
+    init: function ($el, doorCount) {
+        /* 27ms */
+        /* 18ms */
+
+        console.time('fragment');
+        var fragment = document.createDocumentFragment();
+
         this.$el = $el;
         this.doorCount = doorCount;
 
@@ -51,15 +58,19 @@ var Platform = {
             door.$el.html(i.toString());
             this.doors.push(door);
 
-            this.$el.append(door.$el);
+            fragment.appendChild(door.$el[0]);
         }
 
+        this.$el[0].appendChild(fragment);
+
         this.jackpotNumber = Math.randomNumber(doorCount);
-        this.doors[this.jackpotNumber].containsZonk = true;
+        this.doors[this.jackpotNumber].containsZonk = false;
+        var t = console.timeEnd('fragment');
+        console.log(t);
     }
 }
-    $(document).ready(function(){
-        var platform = Object.create(Platform);
-        var $game = $('.door_game');
-        platform.init($game, 100);
-    });
+$(document).ready(function () {
+    var platform = Object.create(Platform);
+    var $game = $('.door_game');
+    platform.init($game, 100);
+});
