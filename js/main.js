@@ -101,8 +101,11 @@ var Door = {
             $document.trigger('doorSelection', [that]);
         });
     },
-    init: function () {
+    init: function (number) {
+        this.number = number;
         this.$el = this.createTag();
+        this.$el.html(this.number.toString());
+
         this.bind();
     }
 }
@@ -119,9 +122,7 @@ var Platform = {
             for (var i = 0; i <= that.doorCount - 1; i++) {
                 console.log(i);
                 var door = Object.create(Door);
-                door.init();
-                door.number = i;
-                door.$el.html(i.toString());
+                door.init(i);
                 that.doors.push(door);
                 fragment.appendChild(door.$el[0]);
             }
@@ -129,10 +130,11 @@ var Platform = {
             that.$el[0].appendChild(fragment);
 
             that.jackpotNumber = Math.randomNumber(that.doorCount);
+            console.log('huh', that.jackpotNumber);
             that.doors[that.jackpotNumber].containsZonk = false;
 
-            var gamemaster = Object.create(GameMaster);
-            gamemaster.bind();
+            var gameMaster = Object.create(GameMaster);
+            gameMaster.bind();
 
             $document.trigger('informAboutDoors', [that.doors]);
             $document.trigger('informAboutJackpotDoor', [that.doors[that.jackpotNumber]]);
@@ -150,5 +152,5 @@ $document.ready(function () {
     var platform = Object.create(Platform);
 
     var $game = $('.door_game');
-    platform.init($game, 100);
+    platform.init($game, 3);
 });
