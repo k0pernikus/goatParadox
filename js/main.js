@@ -17,76 +17,94 @@ var GameMaster = {
             that.jackpotDoor = jackPotDoor;
         }),
 
-            $document.on('doorSelection', function (event, selectedDoor) {
-                if (!that.playerHasSelectedDoor) {
-                    that.selectedDoor = selectedDoor;
-                    that.playerHasSelectedDoor = true;
-                    console.log('door Selected', selectedDoor);
-                    selectedDoor.$el.addClass('selectedByPlayer');
+        $document.on('doorSelection', function (event, selectedDoor) {
+            if (!that.playerHasSelectedDoor) {
+                that.selectedDoor = selectedDoor;
+                that.playerHasSelectedDoor = true;
+                console.log('door Selected', selectedDoor);
+                selectedDoor.$el.addClass('selectedByPlayer');
 
-                    if (selectedDoor !== that.jackpotDoor) {
-                        $document.trigger('openAllDoorsExceptJackpot');
-                    } else {
-                        console.log('fixme');
-                    }
+                if (selectedDoor !== that.jackpotDoor) {
+                    $document.trigger('openAllDoorsExceptJackpotAndSelectedDoor');
+                } else {
+                    $document.trigger('openAllDoorsExceptSelectedDoorAndOneRandomDoor');
+                }
 
-                    $document.trigger('askForChange');
+                $document.trigger('askForChange');
+            }
+        });
+
+        $document.on('openAllDoorsExceptJackpotAndSelectedDoor', function () {
+            that.remainingDoor = that.jackpotDoor;
+            $.each(that.doors, function () {
+                if (!this.isSelected && this !== that.remainingDoor) {
+                    this.$el.removeClass('selectable');
                 }
             });
+        });
 
-        $document.on('openAllDoorsExceptJackpot', function () {
+        $document.on('openAllDoorsExceptSelectedDoorAndOneRandomDoor', function () {
+            do {
+                var randomDoor = that.doors[Math.floor(Math.random()*that.doors.length)]
+            } while (randomDoor === that.jackpotDoor && randomDoor.isSelected)
+
+            that.remainingDoor = randomDoor;
             $.each(that.doors, function () {
-                if (!this.isSelected && this !== that.jackpotDoor) {
+                if (!this.isSelected && this !== that.remainingDoor) {
                     this.$el.removeClass('selectable');
-                    that.remainingDoor = that.jackpotDoor;
                 }
             });
         });
 
         $document.on('askForChange', function () {
-            console.log('Do you wanna change?');
+            console.log();
+            message = 'Do you want to stick with your choice?';
+            alertify.set({labels:{
+                cancel: "No!",
+                ok: "Yes!"
+            }})
+
+            alertify.confirm(message, function(playerDoesStick) {
+                if (playerDoesStick) {
+                    $document.trigger('stickWithSelectedDoor');
+                } else {
+                    $document.trigger('changeToRemainingDoor');
+                }
+            });
         });
 
         $document.on('stickWithSelectedDoor', function () {
             console.log('You fool!');
 
-            if (that.selectedDoor === that.jackpotDoor) {
-                document.trigger('player_wins');
-            } else {
-                $document.trigger('player_loses');
-            }
+            (that.selectedDoor === that.jackpotDoor) ? $document.trigger('player_wins') : $document.trigger('player_loses');
         });
 
         $document.on('changeToRemainingDoor', function () {
-            if (that.remainingDoor === that.jackpotDoor) {
-                document.trigger('player_wins');
-            } else {
-                $document.trigger('player_loses');
-            }
+            (that.remainingDoor === that.jackpotDoor) ? $document.trigger('player_wins') : $document.trigger('player_loses');
         });
 
         $document.on('player_wins', function () {
+            debugger;
+            alertify.success('a winner is you!');
             $document.trigger('reset_game');
-            console.log('a winner is you!');
+            delete that;
         });
 
         $document.on('player_loses', function () {
+            debugger;
+            alertify.error('a loser is you!');
             $document.trigger('reset_game');
-            console.log('a loser is you!');
+            delete that;
         });
     }
 }
-
-Math.randomNumber = function (max) {
-    return Math.round(Math.random() * max % max);
-}
-
 
 var Door = {
     number: null,
     isSelected: false,
     containsZonk: true,
-    createTag: function () {
+    $el: null,
+    create$el: function () {
         return $('<a>', {
             class: 'door selectable'
         }).clone(true);
@@ -103,7 +121,7 @@ var Door = {
     },
     init: function (number) {
         this.number = number;
-        this.$el = this.createTag();
+        this.$el = this.create$el();
         this.$el.html(this.number.toString());
 
         this.bind();
@@ -112,7 +130,8 @@ var Door = {
 
 var Platform = {
     doors: [],
-    bind: function () {
+    jackpotDoor: null,
+    bind: function() {
         var that = this;
         $document.on('reset_game', function () {
             that.$el.html(null);
@@ -129,15 +148,16 @@ var Platform = {
 
             that.$el[0].appendChild(fragment);
 
-            that.jackpotNumber = Math.randomNumber(that.doorCount);
-            console.log('huh', that.jackpotNumber);
-            that.doors[that.jackpotNumber].containsZonk = false;
+            that.jackpotDoor = that.doors[Math.floor(Math.random()*that.doors.length)];
+            that.jackpotDoor.containsZonk = false;
+
+            console.log("Jackpot:", that.jackpotDoor.number);
 
             var gameMaster = Object.create(GameMaster);
             gameMaster.bind();
 
             $document.trigger('informAboutDoors', [that.doors]);
-            $document.trigger('informAboutJackpotDoor', [that.doors[that.jackpotNumber]]);
+            $document.trigger('informAboutJackpotDoor', [that.jackpotDoor]);
         });
     },
     init: function ($el, doorCount) {
@@ -148,9 +168,9 @@ var Platform = {
         $document.trigger('reset_game');
     }
 }
+
 $document.ready(function () {
     var platform = Object.create(Platform);
-
     var $game = $('.door_game');
-    platform.init($game, 3);
+    platform.init($game, 5);
 });
