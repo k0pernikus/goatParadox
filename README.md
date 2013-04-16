@@ -9,6 +9,6 @@ Should you switch?
 
 TODO:
 
-- [ ] Ask player if he wants to swap doors
+- [x] Ask player if he wants to swap doors
 - [ ] Beatuify whole game
-- [ ] Fnord
+- [ ] Game does not reset properly
