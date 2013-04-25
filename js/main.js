@@ -16,6 +16,9 @@
                 }
             });
         },
+        unbind: function() {
+            $document.off('informAboutDoors informAboutJackpotDoor doorSelection askForChange stickWithSelectedDoor changeToRemainingDoor player_wins player_loses')
+        },
         bind: function () {
             var that = this;
 
@@ -76,6 +79,7 @@
 
             $document.on('player_wins', function () {
                 alertify.success('a winner is you!');
+                that.unbind();
                 that = null;
                 $document.trigger('reset_game');
 
@@ -83,6 +87,7 @@
 
             $document.on('player_loses', function () {
                 alertify.error('a loser is you!');
+                that.unbind();
                 that = null;
                 $document.trigger('reset_game');
             });
