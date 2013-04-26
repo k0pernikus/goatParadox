@@ -9,6 +9,8 @@
         remainingDoor: false,
         selectedDoor: null,
         jackpotDoor: null,
+        stickCounter: null,
+        changeCounter: null,
         openAllDoorsExceptSelectedAndRemaing: function() {
             $.each(this.doors, function () {
                 if (!this.isSelected ) {
@@ -68,12 +70,15 @@
             });
 
             $document.on('stickWithSelectedDoor', function () {
-                console.log('You fool!');
+                that.stickCounter.isEnabled = true;
+                that.changeCounter.isEnabled = false;
 
                 (that.selectedDoor === that.jackpotDoor) ? $document.trigger('player_wins') : $document.trigger('player_loses');
             });
 
             $document.on('changeToRemainingDoor', function () {
+                that.stickCounter.isEnabled = false;
+                that.changeCounter.isEnabled = true;
                 (that.remainingDoor === that.jackpotDoor) ? $document.trigger('player_wins') : $document.trigger('player_loses');
             });
 
@@ -99,7 +104,9 @@
             this.selectedDoor = null;
             this.jackpotDoor = null;
         },
-        init: function() {
+        init: function(stickCounter, changeCounter) {
+            this.changeCounter = changeCounter;
+            this.stickCounter = stickCounter;
             this.bind();
         }
     }
@@ -180,30 +187,23 @@
             return this.winCount / this.getAllGames() * 100;
         },
         bind: function() {
-            this.bindState();
             var that = this;
 
-
-            $document.on('reset_game', function() {
-                console.log('hhuh')
-                that.init();
-            });
-
-            $document.one('player_loses', function() {
+            $document.on('player_loses', function() {
                 if (that.isEnabled) {
                     that.loseCount++;
                     $document.trigger('update_counter');
                 }
             });
 
-            $document.one('player_wins', function() {
+            $document.on('player_wins', function() {
                 if (that.isEnabled) {
                     that.winCount++;
                     $document.trigger('update_counter');
                 }
             });
 
-            $document.one('update_counter', function(){
+            $document.on('update_counter', function(){
                 if (that.isEnabled) {
                     console.log(that.name, that.getWinChance());
                 }
@@ -216,42 +216,22 @@
     }
 
     var stickCounter = {
-        name: 'stick counter',
-        bindState: function () {
-            var  that = this;
-            $document.one('stickWithSelectedDoor', function () {
-                that.isEnabled = true;
-            });
-
-            $document.one('changeToRemainingDoor', function () {
-                that.isEnabled = false;
-            });
-        }
+        name: 'stick counter'
     }
 
     var changeCounter = {
-        name: 'change counter',
-        bindState: function () {
-            var that = this;
-            $document.on('stickWithSelectedDoor', function () {
-                that.isEnabled = false;
-            });
-
-            $document.on('changeToRemainingDoor', function () {
-                that.isEnabled = true;
-            });
-        }
+        name: 'change counter'
     }
 
     $.extend(stickCounter, Counter);
     $.extend(changeCounter, Counter);
 
-
-
     var gameMaster = Object.create(GameMaster);
     var platform = Object.create(Platform);
 
-    gameMaster.init();
+    gameMaster.init(stickCounter, changeCounter);
+    changeCounter.init();
+    stickCounter.init();
 
     $document.ready(function () {
         var $game = $('.door_game');
