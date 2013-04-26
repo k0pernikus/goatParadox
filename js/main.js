@@ -144,27 +144,30 @@
         bind: function() {
             var that = this;
             $document.on('reset_game', function () {
-                that.$el.html(null);
-                that.doors = [];
-
-                var fragment = document.createDocumentFragment();
-                for (var i = 0; i <= that.doorCount - 1; i++) {
-                    var door = Object.create(Door);
-                    door.init(i);
-                    that.doors.push(door);
-                    fragment.appendChild(door.$el[0]);
-                }
-
-                that.$el[0].appendChild(fragment);
-
-                that.jackpotDoor = that.doors[Math.floor(Math.random()*that.doors.length)];
-                that.jackpotDoor.containsZonk = false;
-
-                console.log("Jackpot:", that.jackpotDoor.number);
-
-                $document.trigger('informAboutDoors', [that.doors]);
-                $document.trigger('informAboutJackpotDoor', [that.jackpotDoor]);
+                that.reset();
             });
+        },
+        reset: function() {
+            this.$el.html(null);
+            this.doors = [];
+
+            var fragment = document.createDocumentFragment();
+            for (var i = 0; i <= this.doorCount - 1; i++) {
+                var door = Object.create(Door);
+                door.init(i);
+                this.doors.push(door);
+                fragment.appendChild(door.$el[0]);
+            }
+
+            this.$el[0].appendChild(fragment);
+
+            this.jackpotDoor = this.doors[Math.floor(Math.random()*this.doors.length)];
+            this.jackpotDoor.containsZonk = false;
+
+            console.log("Jackpot:", this.jackpotDoor.number);
+
+            $document.trigger('informAboutDoors', [this.doors]);
+            $document.trigger('informAboutJackpotDoor', [this.jackpotDoor]);  
         },
         init: function ($el, doorCount) {
             this.$el = $el;
