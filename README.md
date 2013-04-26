@@ -9,6 +9,5 @@ Should you switch?
 
 TODO:
 
-- [x] Ask player if he wants to swap doors
 - [ ] Beatuify whole game
-- [ ] Game does not reset properly
+= [ ] Maybe add some visualisition of winning chances
