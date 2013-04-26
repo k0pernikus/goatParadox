@@ -164,8 +164,6 @@
             this.jackpotDoor = this.doors[Math.floor(Math.random()*this.doors.length)];
             this.jackpotDoor.containsZonk = false;
 
-            console.log("Jackpot:", this.jackpotDoor.number);
-
             $document.trigger('informAboutDoors', [this.doors]);
             $document.trigger('informAboutJackpotDoor', [this.jackpotDoor]);  
         },
@@ -239,8 +237,6 @@
 
         },
         printStatus: function() {
-            console.log(this.winCount, this.loseCount, this.getWinChance());
-
             this.$won.html(this.winCount);
             this.$lost.html(this.loseCount);
             this.$percentage.html(Math.round( this.getWinChance() * 10 / 10).toString() + "%");
