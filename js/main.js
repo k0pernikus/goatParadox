@@ -177,6 +177,10 @@
 
 
     var Counter = {
+        $el: null,
+        $lost: null,
+        $won: null,
+        $percentage: null,
         isEnabled: false,
         loseCount: 0,
         winCount: 0,
@@ -205,12 +209,29 @@
 
             $document.on('update_counter', function(){
                 if (that.isEnabled) {
+                    that.printStatus();
                     console.log(that.name, that.getWinChance());
                 }
             });
 
         },
-        init: function() {
+        printStatus: function() {
+            console.log(this.winCount, this.loseCount, this.getWinChance());
+
+            this.$won.html(this.winCount);
+            this.$lost.html(this.loseCount);
+            this.$percentage.html(Math.round( this.getWinChance() * 10 / 10).toString() + "%");
+        },
+        init: function($el) {
+            this.$el = $el;
+
+            this.$won = $el.find(".games_won");
+            console.log('huh', this.$won);
+            this.$lost = $el.find(".games_lost");
+            this.$percentage = $el.find(".winning_percentage");
+
+            console.log($el, this.$won, this.$lost, this.$percentage);
+
             this.bind();
         }
     }
@@ -230,11 +251,16 @@
     var platform = Object.create(Platform);
 
     gameMaster.init(stickCounter, changeCounter);
-    changeCounter.init();
-    stickCounter.init();
 
     $document.ready(function () {
         var $game = $('.door_game');
+        var $changeCounterEl = $('.change_door_counter');
+        var $stickCounterEl = $('.stick_door_counter');
+
+        console.log($changeCounterEl, $stickCounterEl);
+
+        changeCounter.init($changeCounterEl);
+        stickCounter.init($stickCounterEl);
         platform.init($game, 3);
     });
 })(document, jQuery, alertify);
