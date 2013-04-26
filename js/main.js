@@ -11,13 +11,13 @@
         jackpotDoor: null,
         openAllDoorsExceptSelectedAndRemaing: function() {
             $.each(this.doors, function () {
-                if (!this.isSelected && this !== this.remainingDoor) {
+                if (!this.isSelected ) {
+
                     this.$el.removeClass('selectable');
                 }
             });
-        },
-        unbind: function() {
-            $document.off('informAboutDoors informAboutJackpotDoor doorSelection askForChange stickWithSelectedDoor changeToRemainingDoor player_wins player_loses')
+
+            this.remainingDoor.$el.addClass('selectable')
         },
         bind: function () {
             var that = this;
@@ -79,18 +79,28 @@
 
             $document.on('player_wins', function () {
                 alertify.success('a winner is you!');
-                that.unbind();
-                that = null;
+                that.reset();
+
                 $document.trigger('reset_game');
 
             });
 
             $document.on('player_loses', function () {
                 alertify.error('a loser is you!');
-                that.unbind();
-                that = null;
+                that.reset();
+
                 $document.trigger('reset_game');
             });
+        },
+        reset: function() {
+            this.doors = null;
+            this.playerHasSelectedDoor = false;
+            this.remainingDoor = null;
+            this.selectedDoor = null;
+            this.jackpotDoor = null;
+        },
+        init: function() {
+            this.bind();
         }
     }
 
@@ -101,7 +111,7 @@
         $el: null,
         create$el: function () {
             return $('<a>', {
-                class: 'door selectable'
+                'class': 'door selectable'
             }).clone(true);
         },
 
@@ -132,7 +142,6 @@
 
                 var fragment = document.createDocumentFragment();
                 for (var i = 0; i <= that.doorCount - 1; i++) {
-                    console.log(i);
                     var door = Object.create(Door);
                     door.init(i);
                     that.doors.push(door);
@@ -145,9 +154,6 @@
                 that.jackpotDoor.containsZonk = false;
 
                 console.log("Jackpot:", that.jackpotDoor.number);
-
-                var gameMaster = Object.create(GameMaster);
-                gameMaster.bind();
 
                 $document.trigger('informAboutDoors', [that.doors]);
                 $document.trigger('informAboutJackpotDoor', [that.jackpotDoor]);
@@ -162,11 +168,93 @@
         }
     }
 
+
+    var Counter = {
+        isEnabled: false,
+        loseCount: 0,
+        winCount: 0,
+        getAllGames: function() {
+            return this.loseCount + this.winCount;
+        },
+        getWinChance: function() {
+            return this.winCount / this.getAllGames() * 100;
+        },
+        bind: function() {
+            this.bindState();
+            var that = this;
+
+
+            $document.on('reset_game', function() {
+                console.log('hhuh')
+                that.init();
+            });
+
+            $document.one('player_loses', function() {
+                if (that.isEnabled) {
+                    that.loseCount++;
+                    $document.trigger('update_counter');
+                }
+            });
+
+            $document.one('player_wins', function() {
+                if (that.isEnabled) {
+                    that.winCount++;
+                    $document.trigger('update_counter');
+                }
+            });
+
+            $document.one('update_counter', function(){
+                if (that.isEnabled) {
+                    console.log(that.name, that.getWinChance());
+                }
+            });
+
+        },
+        init: function() {
+            this.bind();
+        }
+    }
+
+    var stickCounter = {
+        name: 'stick counter',
+        bindState: function () {
+            var  that = this;
+            $document.one('stickWithSelectedDoor', function () {
+                that.isEnabled = true;
+            });
+
+            $document.one('changeToRemainingDoor', function () {
+                that.isEnabled = false;
+            });
+        }
+    }
+
+    var changeCounter = {
+        name: 'change counter',
+        bindState: function () {
+            var that = this;
+            $document.on('stickWithSelectedDoor', function () {
+                that.isEnabled = false;
+            });
+
+            $document.on('changeToRemainingDoor', function () {
+                that.isEnabled = true;
+            });
+        }
+    }
+
+    $.extend(stickCounter, Counter);
+    $.extend(changeCounter, Counter);
+
+
+
+    var gameMaster = Object.create(GameMaster);
+    var platform = Object.create(Platform);
+
+    gameMaster.init();
+
     $document.ready(function () {
-        var platform = Object.create(Platform);
         var $game = $('.door_game');
-        platform.init($game, 5);
+        platform.init($game, 3);
     });
-
-
 })(document, jQuery, alertify);
