@@ -10,4 +10,3 @@ Should you switch?
 TODO:
 
 - [ ] Beatuify whole game
-= [ ] Maybe add some visualisition of winning chances

@@ -4,6 +4,7 @@
 body
   width: 66%
   margin-left: auto
+  margin-right: auto
 
   font-family: 'Noto Sans', sans-serif
   font: sans-serif
@@ -40,5 +41,20 @@ a.door
   &.selectable
     background: yellow
 
-  &.selectedByPlayer
+//  &.selectedByPlayer
     //background: olivedrab
+
+div.graph
+  color: #000000
+  position: relative
+  width: 100%
+  height: 2em
+  div
+    float: left
+    height: 100%
+    &.graph_won
+      background-color: greenyellow
+      width: 50%
+    &.graph_lost
+      background-color: firebrick
+      width: 50%

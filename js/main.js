@@ -178,6 +178,25 @@
         }
     }
 
+    var Graph = {
+        $el: null,
+        $won: null,
+        $lost: null,
+        setPercentageByWinningPercentage: function(winPercentage) {
+            var lostPercentage = 100 - winPercentage;
+
+            this.$won.width(winPercentage.toString() + "%");
+            this.$lost.width(lostPercentage.toString() + "%");
+        },
+        init: function($el) {
+            this.$el = $el;
+            this.$won = $el.find('.graph_won');
+            this.$lost = $el.find('.graph_lost');
+
+            this.$lost.html('losing');
+            this.$won.html('winning');
+        }
+    }
 
     var Counter = {
         $el: null,
@@ -187,6 +206,7 @@
         isEnabled: false,
         loseCount: 0,
         winCount: 0,
+        graph: null,
         getAllGames: function() {
             return this.loseCount + this.winCount;
         },
@@ -213,7 +233,7 @@
             $document.on('update_counter', function(){
                 if (that.isEnabled) {
                     that.printStatus();
-                    console.log(that.name, that.getWinChance());
+                    that.graph.setPercentageByWinningPercentage(that.getWinChance());
                 }
             });
 
@@ -229,11 +249,12 @@
             this.$el = $el;
 
             this.$won = $el.find(".games_won");
-            console.log('huh', this.$won);
             this.$lost = $el.find(".games_lost");
             this.$percentage = $el.find(".winning_percentage");
 
-            console.log($el, this.$won, this.$lost, this.$percentage);
+            var $graph = $el.find('.graph');
+            this.graph = Object.create(Graph);
+            this.graph.init($graph);
 
             this.bind();
         }
@@ -259,8 +280,6 @@
         var $game = $('.door_game');
         var $changeCounterEl = $('.change_door_counter');
         var $stickCounterEl = $('.stick_door_counter');
-
-        console.log($changeCounterEl, $stickCounterEl);
 
         changeCounter.init($changeCounterEl);
         stickCounter.init($stickCounterEl);
