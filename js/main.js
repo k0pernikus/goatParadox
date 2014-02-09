@@ -15,40 +15,40 @@
             $.each(this.doors, function () {
                 if (!this.isSelected ) {
 
-                    this.$el.removeClass('selectable');
+                    this.$el.removeClass('is-selectable');
                 }
             });
 
-            this.remainingDoor.$el.addClass('selectable');
+            this.remainingDoor.$el.addClass('is-selectable');
         },
         bind: function () {
-            var that = this;
+            var self = this;
 
             $document.on('informAboutDoors', function (event, doors) {
-                that.doors = doors;
+                self.doors = doors;
             });
 
             $document.on('informAboutJackpotDoor', function (event, jackPotDoor) {
-                that.jackpotDoor = jackPotDoor;
+                self.jackpotDoor = jackPotDoor;
             });
 
             $document.on('doorSelection', function (event, selectedDoor) {
-                if (!that.playerHasSelectedDoor) {
-                    that.selectedDoor = selectedDoor;
-                    that.playerHasSelectedDoor = true;
+                if (!self.playerHasSelectedDoor) {
+                    self.selectedDoor = selectedDoor;
+                    self.playerHasSelectedDoor = true;
                     selectedDoor.$el.addClass('selectedByPlayer');
 
-                    that.remainingDoor = that.jackpotDoor;
+                    self.remainingDoor = self.jackpotDoor;
 
-                    if (that.selectedDoor === that.jackpotDoor) {
+                    if (self.selectedDoor === self.jackpotDoor) {
                         var randomDoor;
                         do {
-                            randomDoor = that.doors[Math.floor(Math.random() * that.doors.length)];
-                        } while (randomDoor === that.jackpotDoor && randomDoor.isSelected);
-                        that.remainingDoor = randomDoor;
+                            randomDoor = self.doors[Math.floor(Math.random() * self.doors.length)];
+                        } while (randomDoor === self.jackpotDoor && randomDoor.isSelected);
+                        self.remainingDoor = randomDoor;
                     }
 
-                    that.openAllDoorsExceptSelectedAndRemaing();
+                    self.openAllDoorsExceptSelectedAndRemaing();
                     $document.trigger('askForChange');
                 }
             });
@@ -70,21 +70,21 @@
             });
 
             $document.on('stickWithSelectedDoor', function () {
-                that.stickCounter.isEnabled = true;
-                that.changeCounter.isEnabled = false;
+                self.stickCounter.isEnabled = true;
+                self.changeCounter.isEnabled = false;
 
-                (that.selectedDoor === that.jackpotDoor) ? $document.trigger('player_wins') : $document.trigger('player_loses');
+                (self.selectedDoor === self.jackpotDoor) ? $document.trigger('player_wins') : $document.trigger('player_loses');
             });
 
             $document.on('changeToRemainingDoor', function () {
-                that.stickCounter.isEnabled = false;
-                that.changeCounter.isEnabled = true;
-                (that.remainingDoor === that.jackpotDoor) ? $document.trigger('player_wins') : $document.trigger('player_loses');
+                self.stickCounter.isEnabled = false;
+                self.changeCounter.isEnabled = true;
+                (self.remainingDoor === self.jackpotDoor) ? $document.trigger('player_wins') : $document.trigger('player_loses');
             });
 
             $document.on('player_wins', function () {
                 alertify.success('a winner is you!');
-                that.reset();
+                self.reset();
 
                 $document.trigger('reset_game');
 
@@ -92,7 +92,7 @@
 
             $document.on('player_loses', function () {
                 alertify.error('a loser is you!');
-                that.reset();
+                self.reset();
 
                 $document.trigger('reset_game');
             });
@@ -118,15 +118,16 @@
         $el: null,
         create$el: function () {
             return $('<a>', {
-                'class': 'door selectable'
+                'class': 'door is-selectable'
             }).clone(true);
         },
 
         bind: function () {
-            var that = this;
+            var self = this;
             this.$el.on('click tap', function () {
-                that.isSelected = true;
-                $document.trigger('doorSelection', [that]);
+                self.isSelected = true;
+                
+                $document.trigger('doorSelection', [self]);
             });
         },
         init: function (number) {
@@ -142,9 +143,9 @@
         doors: [],
         jackpotDoor: null,
         bind: function() {
-            var that = this;
+            var self = this;
             $document.on('reset_game', function () {
-                that.reset();
+                self.reset();
             });
         },
         reset: function() {
@@ -212,26 +213,29 @@
             return this.winCount / this.getAllGames() * 100;
         },
         bind: function() {
-            var that = this;
+            var self = this;
 
             $document.on('player_loses', function() {
-                if (that.isEnabled) {
-                    that.loseCount++;
+                if (self.isEnabled) {
+                    self.loseCount++;
+                    
                     $document.trigger('update_counter');
                 }
             });
 
             $document.on('player_wins', function() {
-                if (that.isEnabled) {
-                    that.winCount++;
+                if (self.isEnabled) {
+                    self.winCount++;
+                    
                     $document.trigger('update_counter');
                 }
             });
 
             $document.on('update_counter', function(){
-                if (that.isEnabled) {
-                    that.printStatus();
-                    that.graph.setPercentageByWinningPercentage(that.getWinChance());
+                if (self.isEnabled) {
+                    self.printStatus();
+                    
+                    self.graph.setPercentageByWinningPercentage(self.getWinChance());
                 }
             });
 
