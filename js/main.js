@@ -19,7 +19,7 @@
                 }
             });
 
-            this.remainingDoor.$el.addClass('selectable')
+            this.remainingDoor.$el.addClass('selectable');
         },
         bind: function () {
             var that = this;
@@ -58,7 +58,7 @@
                 alertify.set({labels:{
                     cancel: "No!",
                     ok: "Yes!"
-                }})
+                }});
 
                 alertify.confirm(message, function(playerDoesStick) {
                     if (playerDoesStick) {
@@ -109,7 +109,7 @@
             this.stickCounter = stickCounter;
             this.bind();
         }
-    }
+    };
 
     var Door = {
         number: null,
@@ -136,7 +136,7 @@
 
             this.bind();
         }
-    }
+    };
 
     var Platform = {
         doors: [],
@@ -174,7 +174,7 @@
 
             $document.trigger('reset_game');
         }
-    }
+    };
 
     var Graph = {
         $el: null,
@@ -194,7 +194,7 @@
             this.$lost.html('losing');
             this.$won.html('winning');
         }
-    }
+    };
 
     var Counter = {
         $el: null,
@@ -254,15 +254,15 @@
 
             this.bind();
         }
-    }
+    };
 
     var stickCounter = {
         name: 'stick counter'
-    }
+    };
 
     var changeCounter = {
         name: 'change counter'
-    }
+    };
 
     $.extend(stickCounter, Counter);
     $.extend(changeCounter, Counter);
