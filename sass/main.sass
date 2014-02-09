@@ -1,0 +1,67 @@
+@import url(http://fonts.googleapis.com/css?family=Peralta)
+@import url(http://fonts.googleapis.com/css?family=Noto+Sans)
+
+body
+  width: 66%
+  margin-left: auto
+  margin-right: auto
+
+  font-family: 'Noto Sans', sans-serif
+  font: sans-serif
+  background: black
+  color: greenyellow
+
+h1, h2
+  font-family: 'Peralta', cursive
+
+h1
+  font-size: 36pt
+
+div.door_game
+  margin: 3em
+
+a.door
+  font-family: 'Peralta', cursive
+  color: black
+  font-size: 22pt
+  display: table-cell
+  float: left
+  width: 106px
+  height: 180px
+  cursor: pointer
+  border-radius: 12px
+  text-align: center
+  vertical-align: middle
+  margin-right: 1em
+  margin-bottom: 0.4em
+  box-shadow: 0.5 em whitesmoke
+
+  &.is-selectable
+    background: yellow
+
+  &.selectedByPlayer
+    box-shadow: 0 0 30px yellow
+
+.is-goat
+  background: url(../img/goat.png)
+  background-size: contain
+
+.is-jackpot
+  background: url(../img/jackpot.jpg)
+  background-size: contain
+
+div.graph
+  color: #000000
+  position: relative
+  width: 100%
+  height: 2em
+  div
+    float: left
+    height: 100%
+    &.graph_won
+      background-color: greenyellow
+      width: 50%
+    &.graph_lost
+      background-color: firebrick
+      width: 50%
+

@@ -1,0 +1,88 @@
+@import url(http://fonts.googleapis.com/css?family=Peralta);
+@import url(http://fonts.googleapis.com/css?family=Noto+Sans);
+/* line 4, ../sass/main.sass */
+body {
+  width: 66%;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: "Noto Sans", sans-serif;
+  font: sans-serif;
+  background: black;
+  color: greenyellow;
+}
+
+/* line 14, ../sass/main.sass */
+h1, h2 {
+  font-family: "Peralta", cursive;
+}
+
+/* line 17, ../sass/main.sass */
+h1 {
+  font-size: 36pt;
+}
+
+/* line 20, ../sass/main.sass */
+div.door_game {
+  margin: 3em;
+}
+
+/* line 23, ../sass/main.sass */
+a.door {
+  font-family: "Peralta", cursive;
+  color: black;
+  font-size: 22pt;
+  display: table-cell;
+  float: left;
+  width: 106px;
+  height: 180px;
+  cursor: pointer;
+  border-radius: 12px;
+  text-align: center;
+  vertical-align: middle;
+  margin-right: 1em;
+  margin-bottom: 0.4em;
+  box-shadow: 0.5 em whitesmoke;
+}
+/* line 39, ../sass/main.sass */
+a.door.is-selectable {
+  background: yellow;
+}
+/* line 42, ../sass/main.sass */
+a.door.selectedByPlayer {
+  box-shadow: 0 0 30px yellow;
+}
+
+/* line 45, ../sass/main.sass */
+.is-goat {
+  background: url(../img/goat.png);
+  background-size: contain;
+}
+
+/* line 49, ../sass/main.sass */
+.is-jackpot {
+  background: url(../img/jackpot.jpg);
+  background-size: contain;
+}
+
+/* line 53, ../sass/main.sass */
+div.graph {
+  color: black;
+  position: relative;
+  width: 100%;
+  height: 2em;
+}
+/* line 58, ../sass/main.sass */
+div.graph div {
+  float: left;
+  height: 100%;
+}
+/* line 61, ../sass/main.sass */
+div.graph div.graph_won {
+  background-color: greenyellow;
+  width: 50%;
+}
+/* line 64, ../sass/main.sass */
+div.graph div.graph_lost {
+  background-color: firebrick;
+  width: 50%;
+}
