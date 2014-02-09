@@ -11,6 +11,7 @@
         jackpotDoor: null,
         stickCounter: null,
         changeCounter: null,
+        alertify: null,
         openAllDoorsExceptSelectedAndRemaing: function() {
             $.each(this.doors, function () {
                 if (!this.isSelected ) {
@@ -54,13 +55,17 @@
             });
 
             $document.on('askForChange', function () {
-                var message = 'Do you want to stick with your choice?';
-                alertify.set({labels:{
-                    cancel: "I want to switch!",
-                    ok: "I want to stay!"
-                }});
+                var message = 'You have selected door ' + self.selectedDoor.number.toString() + '. Do you want to stick with your choice or switch to door '+ self.remainingDoor.number.toString() + '?';
+                var options = {
+                        labels: {
+                            cancel: "I want to switch to door " + self.remainingDoor.number.toString() + "!",
+                            ok: "I want to stay on door " + self.selectedDoor.number.toString() +"!"
+                        }
+                };
 
-                alertify.confirm(message, function(playerWantsToStayOnCurrentChoice) {
+                self.alertify.set(options);
+
+                self.alertify.confirm(message, function(playerWantsToStayOnCurrentChoice) {
                     if (playerWantsToStayOnCurrentChoice) {
                         $document.trigger('stickWithSelectedDoor');
                     } else {
@@ -70,31 +75,39 @@
             });
 
             $document.on('stickWithSelectedDoor', function () {
-                self.stickCounter.isEnabled = true;
-                self.changeCounter.isEnabled = false;
+                self.stickCounter.enable();
+                self.changeCounter.disable();
 
                 (self.selectedDoor === self.jackpotDoor) ? $document.trigger('player_wins') : $document.trigger('player_loses');
             });
 
             $document.on('changeToRemainingDoor', function () {
-                self.stickCounter.isEnabled = false;
-                self.changeCounter.isEnabled = true;
+                self.stickCounter.disable();
+                self.changeCounter.enable();
+
+                self.remainingDoor.$el.addClass('selectedByPlayer');
+                self.selectedDoor.$el.removeClass('selectedByPlayer');
+
                 (self.remainingDoor === self.jackpotDoor) ? $document.trigger('player_wins') : $document.trigger('player_loses');
             });
 
             $document.on('player_wins', function () {
-                alertify.success('a winner is you!');
-                self.reset();
-
-                $document.trigger('reset_game');
-
+                self.alertify.success('a winner is you!')
+                $document.trigger('ask_to_play_again');
             });
 
             $document.on('player_loses', function () {
-                alertify.error('a loser is you!');
-                self.reset();
+                self.alertify.error('a loser is you!');
+                $document.trigger('ask_to_play_again');
+            });
 
-                $document.trigger('reset_game');
+            $document.on('ask_to_play_again', function() {
+
+                setTimeout(function(){
+                    self.reset();
+                    $document.trigger('reset_game');
+                    self.alertify.log('new game started');
+                }, 1250);
             });
         },
         reset: function() {
@@ -104,7 +117,8 @@
             this.selectedDoor = null;
             this.jackpotDoor = null;
         },
-        init: function(stickCounter, changeCounter) {
+        init: function(alertify, stickCounter, changeCounter) {
+            this.alertify = alertify;
             this.changeCounter = changeCounter;
             this.stickCounter = stickCounter;
             this.bind();
@@ -129,10 +143,23 @@
                 
                 $document.trigger('doorSelection', [self]);
             });
+
+            $document.on('player_wins player_loses', function() {
+                self.setAsUnselectable();
+            });
+        },
+        setAsUnselectable: function() {
+            this.$el.removeClass('is-selectable');
+        },
+        setAsJackpotDoor: function() {
+            self.containsZonk = false;
+            this.$el.removeClass('is-goat');
+            this.$el.addClass('is-jackpot');
         },
         init: function (number) {
             this.number = number;
             this.$el = this.create$el();
+            this.$el.addClass('is-goat');
             this.$el.html(this.number.toString());
 
             this.bind();
@@ -163,7 +190,7 @@
             this.$el[0].appendChild(fragment);
 
             this.jackpotDoor = this.doors[Math.floor(Math.random()*this.doors.length)];
-            this.jackpotDoor.containsZonk = false;
+            this.jackpotDoor.setAsJackpotDoor();
 
             $document.trigger('informAboutDoors', [this.doors]);
             $document.trigger('informAboutJackpotDoor', [this.jackpotDoor]);  
@@ -206,6 +233,12 @@
         loseCount: 0,
         winCount: 0,
         graph: null,
+        enable: function() {
+            this.isEnabled = true;
+        },
+        disable: function() {
+            this.isEnabled = false;
+        },
         getAllGames: function() {
             return this.loseCount + this.winCount;
         },
@@ -274,7 +307,7 @@
     var gameMaster = Object.create(GameMaster);
     var platform = Object.create(Platform);
 
-    gameMaster.init(stickCounter, changeCounter);
+    gameMaster.init(alertify, stickCounter, changeCounter);
 
     $document.ready(function () {
         var $game = $('.door_game');

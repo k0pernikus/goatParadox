@@ -21,17 +21,15 @@ div.door_game
   margin: 3em
 
 a.door
+  font-family: 'Peralta', cursive
   color: black
   font-size: 22pt
   display: table-cell
   float: left
-  border: 1px solid black
-  width: 80px
-  height: 160px
-  background: darkgray
+  width: 106px
+  height: 180px
   cursor: pointer
   border-radius: 12px
-  padding: 5px
   text-align: center
   vertical-align: middle
   margin-right: 1em
@@ -43,6 +41,14 @@ a.door
 
   &.selectedByPlayer
     box-shadow: 0 0 30px yellow
+
+.is-goat
+  background: url(../img/goat.png)
+  background-size: contain
+
+.is-jackpot
+  background: url(../img/jackpot.jpg)
+  background-size: contain
 
 div.graph
   color: #000000
@@ -58,3 +64,4 @@ div.graph
     &.graph_lost
       background-color: firebrick
       width: 50%
+
