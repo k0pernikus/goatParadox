@@ -56,12 +56,12 @@
             $document.on('askForChange', function () {
                 var message = 'Do you want to stick with your choice?';
                 alertify.set({labels:{
-                    cancel: "No!",
-                    ok: "Yes!"
+                    cancel: "I want to switch!",
+                    ok: "I want to stay!"
                 }});
 
-                alertify.confirm(message, function(playerDoesStick) {
-                    if (playerDoesStick) {
+                alertify.confirm(message, function(playerWantsToStayOnCurrentChoice) {
+                    if (playerWantsToStayOnCurrentChoice) {
                         $document.trigger('stickWithSelectedDoor');
                     } else {
                         $document.trigger('changeToRemainingDoor');
