@@ -1,4 +1,4 @@
-(function(document, $, alertify) {
+(function (document, $, alertify) {
     "use strict";
 
     var $document = $(document);
@@ -12,9 +12,9 @@
         stickCounter: null,
         changeCounter: null,
         alertify: null,
-        openAllDoorsExceptSelectedAndRemaing: function() {
+        openAllDoorsExceptSelectedAndRemaining: function () {
             $.each(this.doors, function () {
-                if (!this.isSelected ) {
+                if (!this.isSelected) {
 
                     this.$el.removeClass('is-selectable');
                 }
@@ -49,23 +49,23 @@
                         self.remainingDoor = randomDoor;
                     }
 
-                    self.openAllDoorsExceptSelectedAndRemaing();
+                    self.openAllDoorsExceptSelectedAndRemaining();
                     $document.trigger('askForChange');
                 }
             });
 
             $document.on('askForChange', function () {
-                var message = 'You have selected door ' + self.selectedDoor.number.toString() + '. Do you want to stick with your choice or switch to door '+ self.remainingDoor.number.toString() + '?';
+                var message = 'You have selected door ' + self.selectedDoor.number.toString() + '. Do you want to stick with your choice or switch to door ' + self.remainingDoor.number.toString() + '?';
                 var options = {
-                        labels: {
-                            cancel: "I want to switch to door " + self.remainingDoor.number.toString() + "!",
-                            ok: "I want to stay on door " + self.selectedDoor.number.toString() +"!"
-                        }
+                    labels: {
+                        cancel: "I want to switch to door " + self.remainingDoor.number.toString() + "!",
+                        ok: "I want to stay on door " + self.selectedDoor.number.toString() + "!"
+                    }
                 };
 
                 self.alertify.set(options);
 
-                self.alertify.confirm(message, function(playerWantsToStayOnCurrentChoice) {
+                self.alertify.confirm(message, function (playerWantsToStayOnCurrentChoice) {
                     if (playerWantsToStayOnCurrentChoice) {
                         $document.trigger('stickWithSelectedDoor');
                     } else {
@@ -78,7 +78,11 @@
                 self.stickCounter.enable();
                 self.changeCounter.disable();
 
-                (self.selectedDoor === self.jackpotDoor) ? $document.trigger('player_wins') : $document.trigger('player_loses');
+                if (self.selectedDoor === self.jackpotDoor) {
+                    $document.trigger('player_wins');
+                } else {
+                    $document.trigger('player_loses');
+                }
             });
 
             $document.on('changeToRemainingDoor', function () {
@@ -88,11 +92,15 @@
                 self.remainingDoor.$el.addClass('selectedByPlayer');
                 self.selectedDoor.$el.removeClass('selectedByPlayer');
 
-                (self.remainingDoor === self.jackpotDoor) ? $document.trigger('player_wins') : $document.trigger('player_loses');
+                if (self.remainingDoor === self.jackpotDoor) {
+                    $document.trigger('player_wins');
+                } else {
+                    $document.trigger('player_loses');
+                }
             });
 
             $document.on('player_wins', function () {
-                self.alertify.success('a winner is you!')
+                self.alertify.success('a winner is you!');
                 $document.trigger('ask_to_play_again');
             });
 
@@ -101,23 +109,23 @@
                 $document.trigger('ask_to_play_again');
             });
 
-            $document.on('ask_to_play_again', function() {
+            $document.on('ask_to_play_again', function () {
 
-                setTimeout(function(){
+                setTimeout(function () {
                     self.reset();
                     $document.trigger('reset_game');
                     self.alertify.log('new game started');
                 }, 1250);
             });
         },
-        reset: function() {
+        reset: function () {
             this.doors = null;
             this.playerHasSelectedDoor = false;
             this.remainingDoor = null;
             this.selectedDoor = null;
             this.jackpotDoor = null;
         },
-        init: function(alertify, stickCounter, changeCounter) {
+        init: function (alertify, stickCounter, changeCounter) {
             this.alertify = alertify;
             this.changeCounter = changeCounter;
             this.stickCounter = stickCounter;
@@ -140,19 +148,19 @@
             var self = this;
             this.$el.on('click tap', function () {
                 self.isSelected = true;
-                
+
                 $document.trigger('doorSelection', [self]);
             });
 
-            $document.on('player_wins player_loses', function() {
+            $document.on('player_wins player_loses', function () {
                 self.setAsUnselectable();
             });
         },
-        setAsUnselectable: function() {
+        setAsUnselectable: function () {
             this.$el.removeClass('is-selectable');
         },
-        setAsJackpotDoor: function() {
-            self.containsZonk = false;
+        setAsJackpotDoor: function () {
+            this.containsZonk = false;
             this.$el.removeClass('is-goat');
             this.$el.addClass('is-jackpot');
         },
@@ -169,13 +177,13 @@
     var Platform = {
         doors: [],
         jackpotDoor: null,
-        bind: function() {
+        bind: function () {
             var self = this;
             $document.on('reset_game', function () {
                 self.reset();
             });
         },
-        reset: function() {
+        reset: function () {
             this.$el.html(null);
             this.doors = [];
 
@@ -189,11 +197,11 @@
 
             this.$el[0].appendChild(fragment);
 
-            this.jackpotDoor = this.doors[Math.floor(Math.random()*this.doors.length)];
+            this.jackpotDoor = this.doors[Math.floor(Math.random() * this.doors.length)];
             this.jackpotDoor.setAsJackpotDoor();
 
             $document.trigger('informAboutDoors', [this.doors]);
-            $document.trigger('informAboutJackpotDoor', [this.jackpotDoor]);  
+            $document.trigger('informAboutJackpotDoor', [this.jackpotDoor]);
         },
         init: function ($el, doorCount) {
             this.$el = $el;
@@ -208,13 +216,13 @@
         $el: null,
         $won: null,
         $lost: null,
-        setPercentageByWinningPercentage: function(winPercentage) {
+        setPercentageByWinningPercentage: function (winPercentage) {
             var lostPercentage = 100 - winPercentage;
 
             this.$won.width(winPercentage.toString() + "%");
             this.$lost.width(lostPercentage.toString() + "%");
         },
-        init: function($el) {
+        init: function ($el) {
             this.$el = $el;
             this.$won = $el.find('.graph_won');
             this.$lost = $el.find('.graph_lost');
@@ -233,52 +241,52 @@
         loseCount: 0,
         winCount: 0,
         graph: null,
-        enable: function() {
+        enable: function () {
             this.isEnabled = true;
         },
-        disable: function() {
+        disable: function () {
             this.isEnabled = false;
         },
-        getAllGames: function() {
+        getAllGames: function () {
             return this.loseCount + this.winCount;
         },
-        getWinChance: function() {
+        getWinChance: function () {
             return this.winCount / this.getAllGames() * 100;
         },
-        bind: function() {
+        bind: function () {
             var self = this;
 
-            $document.on('player_loses', function() {
+            $document.on('player_loses', function () {
                 if (self.isEnabled) {
                     self.loseCount++;
-                    
+
                     $document.trigger('update_counter');
                 }
             });
 
-            $document.on('player_wins', function() {
+            $document.on('player_wins', function () {
                 if (self.isEnabled) {
                     self.winCount++;
-                    
+
                     $document.trigger('update_counter');
                 }
             });
 
-            $document.on('update_counter', function(){
+            $document.on('update_counter', function () {
                 if (self.isEnabled) {
                     self.printStatus();
-                    
+
                     self.graph.setPercentageByWinningPercentage(self.getWinChance());
                 }
             });
 
         },
-        printStatus: function() {
+        printStatus: function () {
             this.$won.html(this.winCount);
             this.$lost.html(this.loseCount);
-            this.$percentage.html(Math.round( this.getWinChance() * 10 / 10).toString() + "%");
+            this.$percentage.html(Math.round(this.getWinChance() * 10 / 10).toString() + "%");
         },
-        init: function($el) {
+        init: function ($el) {
             this.$el = $el;
 
             this.$won = $el.find(".games_won");
